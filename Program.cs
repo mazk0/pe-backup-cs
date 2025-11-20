@@ -1,16 +1,16 @@
-﻿using PEBackup;
+using PEBackup;
 
-string[] arguments = Environment.GetCommandLineArgs();
+var (isValid, parsedArgs, errorMessage) = ConsoleInputValidation.ParseAndValidate(Environment.GetCommandLineArgs());
 
-if (!ConsoleInputValidation.ValidateInput(arguments))
+if (!isValid)
 {
+    Console.WriteLine(errorMessage);
+    ConsoleInputValidation.WriteExample();
     return;
 }
 
-string source = arguments[1];
-string destination = arguments[2];
-destination = ConsoleInputValidation.AppendDestination(arguments, destination);
+var destination = ConsoleInputValidation.AppendDestination(parsedArgs!.Destination, parsedArgs.IncludeDate);
 
-Console.WriteLine($"Downloading data form Source: {source} to Destination: {destination}");
-await BackupService.Backup(source, destination);
+Console.WriteLine($"Downloading data form Source: {parsedArgs.Source} to Destination: {destination}");
+await BackupService.Backup(parsedArgs.Source.ToString(), destination);
 Console.WriteLine("Download finished");
